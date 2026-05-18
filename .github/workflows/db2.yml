@@ -2,9 +2,7 @@ name: Flowable DB2 Build
 
 on:
   push:
-    branches:
-      - main
-      - 'flowable-release-*'
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -Dmaven.javadoc.skip=true
@@ -14,11 +12,15 @@ env:
 jobs:
   test_db2:
     name: DB2 ${{ matrix.db2 }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         db2: ["11.5.9.0"]
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
     services:
       db2:
         image: icr.io/db2_community/db2:${{ matrix.db2 }}

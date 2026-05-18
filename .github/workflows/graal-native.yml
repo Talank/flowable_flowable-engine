@@ -2,10 +2,7 @@ name: Flowable Graal Build
 
 on:
   push:
-    branches:
-      - main
-      - 'flowable-release-*'
-
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -B -V --no-transfer-progress
@@ -14,20 +11,30 @@ env:
 jobs:
   test_graal:
     name: Linux Graal Native
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - uses: graalvm/setup-graalvm@54b4f5a65c1a84b2fdfdc2078fe43df32819e4b1 # v1.4.5
-      with:
-        java-version: 17
-        distribution: graalvm
-    - name: Restore Maven Repository Cache
-      uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-maven-
-    - name: Install
-      run: ./mvnw install -Pdistro,include-spring-boot-samples ${MAVEN_ARGS} -DskipTests=true -Dmaven.javadoc.skip=true
-    - name: Test
-      run: ./mvnw test -PnativeTest,native,errorLogging,distro,include-spring-boot-samples ${MAVEN_ARGS} -Dmaven.test.redirectTestOutputToFile=false -pl modules/flowable-spring-boot/flowable-spring-boot-samples/flowable-spring-boot-sample-native
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: graalvm/setup-graalvm@54b4f5a65c1a84b2fdfdc2078fe43df32819e4b1 # v1.4.5
+        with:
+          java-version: 17
+          distribution: graalvm
+      - name: Restore Maven Repository Cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: Install
+        run: ./mvnw install -Pdistro,include-spring-boot-samples ${MAVEN_ARGS} -DskipTests=true 
+          -Dmaven.javadoc.skip=true
+      - name: Test
+        run: ./mvnw test -PnativeTest,native,errorLogging,distro,include-spring-boot-samples ${MAVEN_ARGS} 
+          -Dmaven.test.redirectTestOutputToFile=false -pl 
+          modules/flowable-spring-boot/flowable-spring-boot-samples/flowable-spring-boot-sample-native
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+      fail-fast: false

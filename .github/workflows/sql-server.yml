@@ -2,10 +2,7 @@ name: Flowable SQL Server Build
 
 on:
   push:
-    branches:
-      - main
-      - 'flowable-release-*'
-
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -Dmaven.javadoc.skip=true
@@ -15,11 +12,15 @@ env:
 jobs:
   test_mssql:
     name: SQL Server ${{ matrix.mssql }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         mssql: [2019-latest, 2022-latest]
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:${{ matrix.mssql }}
@@ -30,7 +31,8 @@ jobs:
           - 1433/tcp
         # needed because the mssql container does not provide a health check
         options: >-
-          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P flowableStr0ngPassword -l 30 -Q \"SELECT 1\" || exit 1"
+          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P flowableStr0ngPassword -l 30 -Q \"SELECT 1\"
+          || exit 1"
           --health-start-period 10s
           --health-interval 10s
           --health-timeout 5s
