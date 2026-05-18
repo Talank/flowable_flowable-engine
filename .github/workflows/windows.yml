@@ -2,9 +2,7 @@ name: Flowable Windows Build
 
 on:
   push:
-    branches:
-      - main
-
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -B -V --no-transfer-progress

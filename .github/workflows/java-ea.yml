@@ -2,10 +2,7 @@ name: Flowable Java EA Build
 
 on:
   push:
-    branches:
-      - main
-      - 'flowable-release-*'
-
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -B -V --no-transfer-progress
