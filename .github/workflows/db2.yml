@@ -1,10 +1,7 @@
 name: Flowable DB2 Build
 
 on:
-  push:
-    branches:
-      - main
-      - 'flowable-release-*'
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -Dmaven.javadoc.skip=true
@@ -69,7 +66,7 @@ jobs:
           -Dmaven.test.redirectTestOutputToFile=false
       - name: Upload test artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        if: ${{ failure() && steps.test.conclusion == 'failure' }}
+        if: always()
         with:
           name: surefire-test-reports-db2-${{ matrix.db2 }}
           path: '**/target/surefire-reports/*'

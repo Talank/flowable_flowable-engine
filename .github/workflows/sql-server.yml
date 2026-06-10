@@ -1,11 +1,7 @@
 name: Flowable SQL Server Build
 
 on:
-  push:
-    branches:
-      - main
-      - 'flowable-release-*'
-
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -Dmaven.javadoc.skip=true
@@ -30,7 +26,8 @@ jobs:
           - 1433/tcp
         # needed because the mssql container does not provide a health check
         options: >-
-          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P flowableStr0ngPassword -l 30 -Q \"SELECT 1\" || exit 1"
+          --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P flowableStr0ngPassword -l 30 -Q \"SELECT 1\"
+          || exit 1"
           --health-start-period 10s
           --health-interval 10s
           --health-timeout 5s
@@ -74,7 +71,7 @@ jobs:
           -Dmaven.test.redirectTestOutputToFile=false
       - name: Upload test artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        if: ${{ failure() && steps.test.conclusion == 'failure' }}
+        if: always()
         with:
           name: surefire-test-reports-${{ matrix.mssql }}
           path: '**/target/surefire-reports/*'
