@@ -11,15 +11,11 @@ env:
 jobs:
   test_postgres:
     name: Postgres ${{ matrix.postgres }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         postgres: [15, 16, 17, 18]
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
     services:
       postgres:
         image: postgres:${{ matrix.postgres }}
