@@ -11,7 +11,7 @@ env:
 jobs:
   test_oracle:
     name: Oracle ${{ matrix.oracle }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -27,10 +27,6 @@ jobs:
             driverArtifact: ojdbc17
             serviceName: FREEPDB1
             type: free
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
     services:
       oracle:
         image: gvenzl/oracle-${{ matrix.type }}:${{ matrix.oracle }}
