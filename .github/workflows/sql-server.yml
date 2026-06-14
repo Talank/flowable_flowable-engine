@@ -18,8 +18,6 @@ jobs:
         mssql: [2019-latest, 2022-latest]
         os:
           - ubuntu-latest
-          - windows-latest
-          - macos-latest
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:${{ matrix.mssql }}
