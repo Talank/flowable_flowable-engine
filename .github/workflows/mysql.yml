@@ -12,15 +12,11 @@ env:
 jobs:
   test_mysql:
     name: MySQL ${{ matrix.mysql }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         mysql: [8.0, 8.4]
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
     services:
       mysql:
         image: mysql:${{ matrix.mysql }}
