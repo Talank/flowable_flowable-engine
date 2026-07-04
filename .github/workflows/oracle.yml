@@ -1,10 +1,7 @@
 name: Flowable Oracle Build
 
 on:
-  push:
-    branches:
-      - main
-      - 'flowable-release-*'
+  workflow_dispatch:
 env:
   MAVEN_ARGS: >-
     -Dmaven.javadoc.skip=true
@@ -14,11 +11,11 @@ env:
 jobs:
   test_oracle:
     name: Oracle ${{ matrix.oracle }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        oracle: [ "21-slim-faststart", "23-slim-faststart" ]
+        oracle: ["21-slim-faststart", "23-slim-faststart"]
         include:
           - oracle: 21-slim-faststart
             driverVersion: 21.6.0.0.1
@@ -30,6 +27,9 @@ jobs:
             driverArtifact: ojdbc17
             serviceName: FREEPDB1
             type: free
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
     services:
       oracle:
         image: gvenzl/oracle-${{ matrix.type }}:${{ matrix.oracle }}
@@ -71,7 +71,8 @@ jobs:
           -Djdbc.username=flowable
           -Djdbc.password=flowable
           -Djdbc.driver=oracle.jdbc.driver.OracleDriver
-          -Dspring.datasource.url=jdbc:oracle:thin:@localhost:${{ job.services.oracle.ports[1521] }}/${{ matrix.serviceName }}
+          -Dspring.datasource.url=jdbc:oracle:thin:@localhost:${{ job.services.oracle.ports[1521] }}/${{ matrix.serviceName
+          }}
           -Dspring.datasource.username=flowable
           -Dspring.datasource.password=flowable
           -Doracle.jdbc.version=${{ matrix.driverVersion }}
@@ -79,7 +80,7 @@ jobs:
           -Dmaven.test.redirectTestOutputToFile=false
       - name: Upload test artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        if: ${{ failure() && steps.test.conclusion == 'failure' }}
+        if: always()
         with:
           name: surefire-test-reports-oracle-${{ matrix.oracle }}
           path: '**/target/surefire-reports/*'
