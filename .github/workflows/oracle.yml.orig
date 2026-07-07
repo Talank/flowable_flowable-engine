@@ -15,38 +15,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        oracle: ["21-slim-faststart", "23-slim-faststart"]
         include:
           - oracle: 21-slim-faststart
             driverVersion: 21.6.0.0.1
             driverArtifact: ojdbc8
             serviceName: XEPDB1
             type: xe
-            oracleImage: gvenzl/oracle-xe:21-slim-faststart
-            os: ubuntu-latest
-          - oracle: 21-slim-faststart
-            driverVersion: 21.6.0.0.1
-            driverArtifact: ojdbc8
-            serviceName: XEPDB1
-            type: xe
-            oracleImage: gvenzl/oracle-xe:21-slim-faststart
-            os: ubuntu-24.04-arm
           - oracle: 23-slim-faststart
             driverVersion: 23.7.0.25.01
             driverArtifact: ojdbc17
             serviceName: FREEPDB1
             type: free
-            oracleImage: gvenzl/oracle-free:23-slim-faststart
-            os: ubuntu-latest
-          - oracle: 23-slim-faststart
-            driverVersion: 23.7.0.25.01
-            driverArtifact: ojdbc17
-            serviceName: FREEPDB1
-            type: free
-            oracleImage: gvenzl/oracle-free:23-slim-faststart
-            os: ubuntu-24.04-arm
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
     services:
       oracle:
-        image: ${{ matrix.oracleImage }}
+        image: gvenzl/oracle-${{ matrix.type }}:${{ matrix.oracle }}
         env:
           ORACLE_PASSWORD: flowable
           APP_USER: flowable
